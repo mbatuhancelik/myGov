@@ -7,12 +7,22 @@ contract GOVToken is ERC20 {
     mapping(address => bool) givenFaucets;
     constructor(uint256 initialSupply) ERC20("MyGov", "MGV") {
         owner = msg.sender;
-        _mint(owner, initialSupply * (10**18));
+        _mint(owner, initialSupply );
     }
 
     function Faucet() public {
         require(!(givenFaucets[msg.sender]));
         givenFaucets[msg.sender] = true;
-        super._transfer(owner, msg.sender, 10**18);
+        super._transfer(owner, msg.sender, 1);
+    }
+
+    function delegateVoteTo(address memberaddr, uint projectId) public {
+
+    }
+    function donateEther() payable public{
+
+    }
+    function decimals() public view virtual override returns (uint8){
+        return 0;
     }
 }
