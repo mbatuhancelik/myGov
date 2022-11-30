@@ -5,6 +5,17 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 contract GOVToken is ERC20 {
     address owner;
     mapping(address => bool) givenFaucets;
+
+    struct projectProposal{
+        string ipfshash;
+        uint votedeadline;
+        uint[] paymentamounts;
+        uint[] payschedule;
+        
+        address proposer;
+        uint id;
+
+    }
     constructor(uint256 initialSupply) ERC20("MyGov", "MGV") {
         owner = msg.sender;
         _mint(owner, initialSupply );
@@ -20,9 +31,23 @@ contract GOVToken is ERC20 {
 
     }
     function donateEther() payable public{
+        
+    }
+    function donateMyGovToken(uint amount) public{
+        super._transfer(msg.sender, owner, amount);
+    }
+    
+    function submitProjectProposal() 
+    public returns (uint projectid) 
+    {
+        super._transfer(msg.sender, owner, 5);
+        return 0;
 
     }
+    
+    
     function decimals() public view virtual override returns (uint8){
         return 0;
     }
+
 }
