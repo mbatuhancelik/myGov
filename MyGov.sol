@@ -20,7 +20,6 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
         address[] votedAddresses;
         mapping(address => bool) voteContent;
         mapping(address => bool) votedBefore;
-        
     }
 
     uint256 surveyCounter;
@@ -45,11 +44,14 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
         //requires solidity 5
         owner = address(this);
         _mint(owner, initialSupply);
+        surveyCounter = 0;
+        projectCounter= 0;
     }
 
     function faucet() public {
         require(!(givenFaucets[msg.sender]));
-        ERC20._transfer(owner, msg.sender, 1);
+        //TODO: change this back to 5
+        ERC20._transfer(owner, msg.sender, 5);
         ERC20Votes.delegate(msg.sender);
 
         givenFaucets[msg.sender] = true;
@@ -58,7 +60,7 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
     function donateEther() public payable {}
 
     function donateMyGovToken(uint256 amount) public {
-        super._transfer(msg.sender, owner, amount);
+        ERC20._transfer(msg.sender, owner, amount);
     }
 
     function submitProjectProposal(
@@ -67,8 +69,8 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
         uint256[] memory paymentamounts,
         uint256[] memory payschedule
     ) public payable returns (uint256 projectid) {
-        require(msg.value == 100000000000000000);
-        super.transfer(owner, 5);
+        require(msg.value == 100000000000000000, "You must send 100000000000000000 wei");
+        ERC20.transfer(owner, 5);
 
         proposals[projectCounter].ipfshash = ipfshash;
         proposals[projectCounter].votedeadline = votedeadline;
@@ -91,15 +93,15 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
         uint256 numchoices,
         uint256 atmostchoice
     ) public payable returns (uint256 surveyid) {
-        require(msg.value == 40000000000000000);
-        super.transfer(owner, 2);
+        require(msg.value == 40000000000000000, "You must send 40000000000000000 wei");
+        ERC20.transfer(owner, 2);
 
         surveys[surveyCounter].ipfshash = ipfshash;
         surveys[surveyCounter].surveydeadline = surveydeadline;
         surveys[surveyCounter].numChoices = numchoices;
         surveys[surveyCounter].atmostchoice = atmostchoice;
         surveys[surveyCounter].owner = msg.sender;
-        surveys[surveyCounter].id = projectCounter;
+        surveys[surveyCounter].id = surveyCounter;
 
         surveyCounter += 1;
         return proposals[projectCounter - 1].id;
