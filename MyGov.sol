@@ -9,7 +9,7 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
     mapping(address => bool) givenFaucets;
 
     uint256 projectCounter;
-    mapping(uint256 => projectProposal) proposals;
+    uint256 surveyCounter;
     mapping(uint256 => Survey) surveys; //Survey id => Survey
     mapping(uint256 => projectProposal) proposals ; //Proposal id => Proposal
     mapping(uint256 => bool) isFunded; //Project id => funded?
