@@ -9,11 +9,9 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
     mapping(address => bool) givenFaucets;
 
     uint256 projectCounter;
-    uint256 surveyCounter;
-    mapping(uint256 => Survey) surveys; //Survey id => Survey
     mapping(uint256 => projectProposal) proposals ; //Proposal id => Proposal
     mapping(uint256 => bool) isFunded; //Project id => funded?
-    mapping(address => bool) members;  //check member status for ii & iii
+    
 
     struct projectProposal {
         string ipfshash;
@@ -37,12 +35,14 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
         uint256[] choices;
         address owner;
         uint256 id;
+        uint256[] results; 
+        uint256 numtaken;
         address[] votedAddresses;
         mapping(address => bool) voteContent;
         mapping(address => bool) votedBefore;
     }
 
-    constructor(uint256 initialSupply)
+     constructor(uint256 initialSupply)
         ERC20("MyGov", "MGV")
         ERC20Permit("MyGov")
     {
@@ -51,21 +51,6 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
         _mint(owner, initialSupply);
         surveyCounter = 0;
         projectCounter= 0;
-    }
-
-    struct Survey {
-        uint256 surveyid;
-        address surveyowner;
-        uint256 surveydeadline;
-        uint256 numchoices;
-        uint256 atmostchoice;
-        uint256[] results; 
-        uint256 numtaken;
-    }
-
-    constructor(uint256 initialSupply) ERC20("MyGov", "MGV") {
-        owner = msg.sender;
-        _mint(owner, initialSupply);
     }
 
     function faucet() public {
@@ -150,27 +135,13 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
     function  _delegate(address delegator, address delegatee)  override(ERC20Votes) internal{
         require(ERC20.balanceOf(delegatee) > 0, "You cannot delegate votes to a non member address.");
         ERC20Votes._delegate(delegator,  delegatee);
-    }
         super._transfer(owner, msg.sender, 1);
-        members[msg.sender] = true;
     }
 
-    function delegateVoteTo(address memberaddr, uint256 projectId) public {}
 
-    function donateEther() public payable {}
-
-    function donateMyGovToken(uint256 amount) public {
-        super._transfer(msg.sender, owner, amount);
-    }
-
-    function submitProjectProposal() public returns (uint256 projectid) {
-        super._transfer(msg.sender, owner, 5);
-        return 0;
-    }
-    
     function takeSurvey(uint256 surveyid, uint256[] calldata choices) public {
-        //require(surveys[surveyid].surveydeadline > now, "This survey has come to an end");
-        require(members[msg.sender], "Only members can use survey service.");
+        require(surveys[surveyid].surveydeadline > block.timestamp, "This survey has come to an end");
+        require(ERC20.balanceOf(msg.sender) > 0, "You must be a member to take surveys.");
         require(choices.length <= surveys[surveyid].atmostchoice, "max choice limit exceeded");
         surveys[surveyid].numtaken += 1;
         //?   
@@ -184,7 +155,7 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
         return (surveys[surveyid].numtaken, surveys[surveyid].results);
     }
 
-    function getSurveyInfo(uint256 surveyid) //missing: hash
+    function getSurveyInfo(uint256 surveyid) 
         public
         view
         returns (
@@ -195,9 +166,9 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
         )
     {
         return (
-            "",
+            surveys[surveyid].ipfshash,
             surveys[surveyid].surveydeadline,
-            surveys[surveyid].numchoices,
+            surveys[surveyid].numChoices,
             surveys[surveyid].atmostchoice
         );
     }
@@ -207,7 +178,7 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
         view
         returns (address surveyowner)
     {
-        return (surveys[surveyid].surveyowner);
+        return (surveys[surveyid].owner);
     }
 
     function decimals() public view virtual override returns (uint8) {
@@ -252,12 +223,12 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
     }
     //even if allowance is spent, spender cannot use all tokens of the owner
     function _spendAllowance(
-        address owner,
+        address Allowner,
         address spender,
         uint256 amount
     ) internal override(ERC20) {
-        require(amount == ERC20.balanceOf(owner), "You cannot use all tokens of another member");
+        require(amount == ERC20.balanceOf(Allowner), "You cannot use all tokens of another member");
 
-        ERC20._spendAllowance(owner, spender, amount);
+        ERC20._spendAllowance(Allowner, spender, amount);
     }
 }
