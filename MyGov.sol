@@ -184,18 +184,14 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
             string memory ipfshash,
             uint256 surveydeadline,
             uint256 numchoices,
-            uint256 atmostchoice,
-            uint256 numtaken, 
-            uint256[] memory results
+            uint256 atmostchoice
         )
     {
         return (
             surveys[surveyid].ipfshash,
             surveys[surveyid].surveydeadline,
             surveys[surveyid].numChoices,
-            surveys[surveyid].atmostchoice,
-            surveys[surveyid].numtaken, 
-            surveys[surveyid].results
+            surveys[surveyid].atmostchoice
         );
     }
 
