@@ -43,8 +43,8 @@ contract myGOV is mygovtoken  {
         mapping(address => bool) votedBefore;
     }
 
-    constructor(uint256 maxTokens)
-        mygovtoken(maxTokens)
+    constructor()
+        mygovtoken(1e7)
     {
         surveyCounter = 0;
         projectCounter = 0;

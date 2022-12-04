@@ -14,13 +14,13 @@ contract mygovtoken is ERC20, ERC20Permit, ERC20Votes {
 
     uint256 nonReservedBalance;
 
-    constructor(uint256 maxTokens)
+    constructor(uint256 maxTokenss)
         ERC20("MyGov", "MGV")
         ERC20Permit("MyGov")
     {
         //requires solidity 5
         owner = address(this);
-        maxTokens = maxTokens;
+        maxTokens = maxTokenss;
     }
 
     function faucet() public {
@@ -28,7 +28,7 @@ contract mygovtoken is ERC20, ERC20Permit, ERC20Votes {
         require(!(givenFaucets[msg.sender]), "You already got your faucet!.");
         //TODO: change this back to 5
         // ERC20._transfer(owner, msg.sender, 1);
-        ERC20._mint(msg.sender,1);
+        ERC20Votes._mint(msg.sender,1);
         ERC20Votes._delegate(msg.sender,msg.sender);
 
 
@@ -61,7 +61,6 @@ contract mygovtoken is ERC20, ERC20Permit, ERC20Votes {
             "You cannot delegate votes to a non member address."
         );
         ERC20Votes._delegate(delegator, delegatee);
-        super._transfer(owner, msg.sender, 1);
     }
 
     function _afterTokenTransfer(
