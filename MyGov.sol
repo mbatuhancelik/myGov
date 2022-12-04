@@ -1,20 +1,15 @@
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
+import "./mygovtoken.sol";
 
-contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
-    address owner;
 
-    uint totalFaucets;
-    mapping(address => bool) givenFaucets;
+contract myGOV is mygovtoken  {
 
     uint256 projectCounter;
-    mapping(uint256 => projectProposal) proposals ; //Proposal id => Proposal
+    mapping(uint256 => projectProposal) proposals; //Proposal id => Proposal
     mapping(uint256 => bool) isFunded; //Project id => funded?
-    
-    mapping(address => uint) votedContent;
+
+    mapping(address => uint256) votedContent;
 
     mapping(uint256 => projectProposal) projects;
     struct projectProposal {
@@ -23,7 +18,10 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
         uint256[] paymentamounts;
         uint256[] payschedule;
         address proposer;
+        bool isFunded;
+        uint256 requiredFund;
         uint256 id;
+        uint256 currentPhase;
         address[] votedAddresses;
         mapping(address => bool) voteContent;
         mapping(address => bool) votedBefore;
@@ -39,39 +37,21 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
         uint256[] choices;
         address owner;
         uint256 id;
-        uint256[] results; 
+        uint256[] results;
         uint256 numtaken;
         address[] votedAddresses;
         mapping(address => bool) votedBefore;
     }
 
-     constructor(uint256 initialSupply)
-        ERC20("MyGov", "MGV")
-        ERC20Permit("MyGov")
+    constructor(uint256 maxTokens)
+        mygovtoken(maxTokens)
     {
-        //requires solidity 5
-        owner = address(this);
-        _mint(owner, initialSupply);
         surveyCounter = 0;
-        projectCounter= 0;
+        projectCounter = 0;
         totalFaucets = 0;
+        nonReservedBalance = 0;
     }
 
-    function faucet() public {
-        require(!(givenFaucets[msg.sender]));
-        //TODO: change this back to 5
-        ERC20._transfer(owner, msg.sender, 5);
-        ERC20Votes.delegate(msg.sender);
-
-        givenFaucets[msg.sender] = true;
-        totalFaucets += 1;
-    }
-
-    function donateEther() public payable {}
-
-    function donateMyGovToken(uint256 amount) public {
-        ERC20._transfer(msg.sender, owner, amount);
-    }
 
     function submitProjectProposal(
         string memory ipfshash,
@@ -79,7 +59,10 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
         uint256[] memory paymentamounts,
         uint256[] memory payschedule
     ) public payable returns (uint256 projectid) {
-        require(msg.value == 100000000000000000, "You must send 100000000000000000 wei");
+        require(
+            msg.value == 100000000000000000,
+            "You must send 100000000000000000 wei"
+        );
         ERC20.transfer(owner, 5);
 
         proposals[projectCounter].ipfshash = ipfshash;
@@ -89,13 +72,17 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
         proposals[projectCounter].proposer = msg.sender;
         proposals[projectCounter].id = projectCounter;
 
+        uint256 requiredBalance = 0;
+        for (uint256 i = 0; i < paymentamounts.length; i++) {
+            requiredBalance += paymentamounts[i];
+        }
+        proposals[projectCounter].requiredFund = requiredBalance;
+        proposals[projectCounter].currentPhase = 0;
+
         projectCounter += 1;
+        nonReservedBalance += msg.value;
         return proposals[projectCounter - 1].id;
     }
-    function delegateVoteTo(address memberaddr, uint projectid) public {
-        ERC20Votes.delegate(memberaddr);
-    }
-
 
     function submitSurvey(
         string memory ipfshash,
@@ -103,51 +90,120 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
         uint256 numchoices,
         uint256 atmostchoice
     ) public payable returns (uint256 surveyid) {
-        require(msg.value == 40000000000000000, "You must send 40000000000000000 wei");
+        require(
+            msg.value == 40000000000000000,
+            "You must send 40000000000000000 wei"
+        );
         ERC20.transfer(owner, 2);
 
         surveys[surveyCounter].ipfshash = ipfshash;
         surveys[surveyCounter].surveydeadline = surveydeadline;
         surveys[surveyCounter].numChoices = numchoices;
         surveys[surveyCounter].atmostchoice = atmostchoice;
-        surveys[surveyCounter].results = new uint[](numchoices);
+        surveys[surveyCounter].results = new uint256[](numchoices);
         surveys[surveyCounter].owner = msg.sender;
         surveys[surveyCounter].id = surveyCounter;
 
         surveyCounter += 1;
+        nonReservedBalance += msg.value;
         return surveys[surveyCounter - 1].id;
     }
 
-    function voteForProjectProposal(uint projectid,bool choice) public{
-        require(ERC20.balanceOf(msg.sender) > 0, "You must be a member to vote for project proposals.");
-        if(!proposals[projectid].votedBefore[msg.sender]){
+    function voteForProjectProposal(uint256 projectid, bool choice) public {
+        require(
+            ERC20.balanceOf(msg.sender) > 0,
+            "You must be a member to vote for project proposals."
+        );
+        if (!proposals[projectid].votedBefore[msg.sender]) {
             proposals[projectid].votedBefore[msg.sender] = true;
             proposals[projectid].votedAddresses.push(msg.sender);
         }
         proposals[projectid].voteContent[msg.sender] = choice;
-
     }
+
     //these data structures must be cleared at each step
-    function voteForProjectPayment(uint projectid,bool choice) public {
-        require(ERC20.balanceOf(msg.sender) > 0, "You must be a member to vote for project payments.");
-        if(!proposals[projectid].votedBefore[msg.sender]){
+    function voteForProjectPayment(uint256 projectid, bool choice) public {
+        require(
+            ERC20.balanceOf(msg.sender) > 0,
+            "You must be a member to vote for project payments."
+        );
+        if (!proposals[projectid].votedBefore[msg.sender]) {
             proposals[projectid].votedBefore[msg.sender] = true;
             proposals[projectid].votedAddresses.push(msg.sender);
         }
         proposals[projectid].voteContent[msg.sender] = choice;
     }
 
-    function isProjectPassed(uint projectid) public view returns(bool){
-        require(projectid < projectCounter, "There is no project with the given projct id");
+    function clearProjectVotes(uint256 projectid) private {
         projectProposal storage project = proposals[projectid];
-        uint yays;
-        uint treshold = totalFaucets / 10;
+        for (uint256 i = 0; i < project.votedAddresses.length; i++) {
+            project.votedBefore[project.votedAddresses[i]] = false;
+            project.voteContent[project.votedAddresses[i]] = false;
+        }
+        delete project.votedAddresses;
+    }
+
+    function reserveProjectGrant(uint256 projectid) public {
+        require(projectid < projectCounter, "This project does not exists");
+        projectProposal storage project = proposals[projectid];
+        require(
+            project.votedeadline > block.timestamp,
+            "This proposal has expired."
+        );
+        require(
+            msg.sender == project.proposer,
+            "Only the project owner can reserve project grant."
+        );
+        require(getIsProjectPassed(projectid), "This project has not passed.");
+        require(
+            project.requiredFund < nonReservedBalance,
+            "MyGov currently does not have the financial power to support this project."
+        );
+        project.isFunded = true;
+        project.currentPhase = 0;
+        nonReservedBalance -= project.requiredFund;
+        clearProjectVotes(projectid);
+    }
+
+    function withdrawProjectPayment(uint256 projectid) public {
+        require(projectid < projectCounter, "This project does not exists");
+        projectProposal storage project = proposals[projectid];
+        require(project.isFunded, "This project is not funded by the MyGov.");
+        require(
+            project.payschedule[project.currentPhase] < block.timestamp,
+            "This payment has expired."
+        );
+        require(
+            msg.sender == project.proposer,
+            "Only the project owner can withdraw the project payment."
+        );
+
+        (bool sent, bytes memory data) = msg.sender.call{
+            value: project.paymentamounts[project.currentPhase]
+        }("");
+        require(sent, "Failed to send Ether");
+        project.currentPhase += 1;
+        clearProjectVotes(projectid);
+    }
+
+    function getIsProjectPassed(uint256 projectid)
+        public
+        view
+        returns (bool funded)
+    {
+        require(
+            projectid < projectCounter,
+            "There is no project with the given projct id"
+        );
+        projectProposal storage project = proposals[projectid];
+        uint256 yays;
+        uint256 treshold = totalFaucets / 10;
         address voter;
-        for(uint i = 0; i < 10000000; i ++){
+        for (uint256 i = 0; i < 10000000; i++) {
             voter = project.votedAddresses[0];
-            if(project.voteContent[voter]){
+            if (project.voteContent[voter]) {
                 yays += getVotes(voter);
-                if(yays >  treshold){
+                if (yays > treshold) {
                     return true;
                 }
             }
@@ -156,17 +212,30 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
     }
 
     function takeSurvey(uint256 surveyid, uint256[] calldata choices) public {
-    //require(surveys[surveyid].surveydeadline > now, "This survey has come to an end");
-    require(balanceOf(msg.sender) > 0, "Only members can use survey service.");
-    require(choices.length <= surveys[surveyid].atmostchoice, "max choice limit exceeded");
-    require(!surveys[surveyid].votedBefore[msg.sender], "You already voted for this survey.");
-
-    surveys[surveyid].numtaken += 1;
-    for(uint i = 0; i < choices.length; i ++){
-        require(choices[i] < surveys[surveyid].numChoices, "Invalid choice");
-        surveys[surveyid].results[choices[i]] += 1;
-    }
-
+        require(
+            surveys[surveyid].surveydeadline > block.timestamp,
+            "This survey has come to an end"
+        );
+        require(
+            balanceOf(msg.sender) > 0,
+            "Only members can use survey service."
+        );
+        require(
+            choices.length <= surveys[surveyid].atmostchoice,
+            "max choice limit exceeded"
+        );
+        require(
+            !surveys[surveyid].votedBefore[msg.sender],
+            "You already voted for this survey."
+        );
+        surveys[surveyid].numtaken += 1;
+        for (uint256 i = 0; i < choices.length; i++) {
+            require(
+                choices[i] < surveys[surveyid].numChoices,
+                "Invalid choice"
+            );
+            surveys[surveyid].results[choices[i]] += 1;
+        }
     }
 
     function getSurveyResults(uint256 surveyid)
@@ -177,7 +246,7 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
         return (surveys[surveyid].numtaken, surveys[surveyid].results);
     }
 
-    function getSurveyInfo(uint256 surveyid) 
+    function getSurveyInfo(uint256 surveyid)
         public
         view
         returns (
@@ -203,59 +272,4 @@ contract GOVToken is ERC20, ERC20Permit, ERC20Votes {
         return (surveys[surveyid].owner);
     }
 
-    function decimals() public view virtual override returns (uint8) {
-        return 0;
-    }
-
-    function  _delegate(address delegator, address delegatee)  override(ERC20Votes) internal{
-        require(ERC20.balanceOf(delegatee) > 0, "You cannot delegate votes to a non member address.");
-        ERC20Votes._delegate(delegator,  delegatee);
-        super._transfer(owner, msg.sender, 1);
-    }
-    function _afterTokenTransfer(
-        address from,
-        address to,
-        uint256 amount
-    ) internal override(ERC20, ERC20Votes) {
-        if (amount == ERC20.balanceOf(from)) {
-            ERC20Votes.delegate(to);
-        }
-        ERC20._afterTokenTransfer(from, to, amount);
-    }
-
-    function _mint(address to, uint256 amount)
-        internal
-        override(ERC20, ERC20Votes)
-    {
-        ERC20Votes._mint(to, amount);
-    }
-
-    function _burn(address account, uint256 amount)
-        internal
-        override(ERC20, ERC20Votes)
-    {
-        super._burn(account, amount);
-    }
-
-    //sending all the balance equals to sending all the voting power too
-    function _transfer(
-        address from,
-        address to,
-        uint256 amount
-    ) internal override(ERC20) {
-        if (amount == ERC20.balanceOf(from)) {
-            ERC20Votes.delegate(to);
-        }
-        ERC20._transfer(from, to, amount);
-    }
-    //even if allowance is spent, spender cannot use all tokens of the owner
-    function _spendAllowance(
-        address Allowner,
-        address spender,
-        uint256 amount
-    ) internal override(ERC20) {
-        require(amount == ERC20.balanceOf(Allowner), "You cannot use all tokens of another member");
-
-        ERC20._spendAllowance(Allowner, spender, amount);
-    }
 }
