@@ -20,7 +20,8 @@ contract mygovtoken is ERC20, ERC20Permit, ERC20Votes {
     {
         //requires solidity 5
         owner = address(this);
-        maxTokens = maxTokenss;
+        maxTokens = maxTokenss - 1 ;
+        ERC20Votes._mint(owner,1);
     }
 
     function faucet() public {
