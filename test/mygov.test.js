@@ -3,6 +3,7 @@ import 'hardhat/console.sol'
 import '../contracts/token.sol'
 
 const {expect} = require('chai')
+const timeMachine = require('ganache-time-traveler');
 
 const hre = require('hardhat')
 var num_of_users = 25
@@ -145,6 +146,7 @@ describe('mygov', function () {
         
         
     }),
+    
     it('donates MyGov tokens', async function () {
          var initialBalance = await mygov
             .connect(user_accounts[0])
@@ -173,26 +175,31 @@ describe('mygov', function () {
         vote = await mygov.getVoteContent(0,user_accounts[10].address)
         expect(vote === true)
     }),
-/*
+
     it('reserves project grant', async function() {
         console.log("reserve")
-        try{
-            await mygov.connect(user_accounts[0]).reserveProjectGrant(333)
-        } catch (error){
-            console.log("caught error 1")
-           // error.message.should.equal('This project does not exists')
-        }
-        try{
-            await mygov.connect(user_accounts[1]).reserveProjectGrant(0)
-        } catch (error){
-            console.log("caught error 2")
-           // error.message.should.equal('Only the project owner can reserve project grant.')
-        }
+       
+        await mygov.connect(user_accounts[0]).reserveProjectGrant(333).catch(err => {
+          expect(
+            err.message,
+            'This project does not exists'
+          )
+            })
+       
+        await mygov.connect(user_accounts[1]).reserveProjectGrant(0).catch(err => {
+          expect(
+            err.message,
+            'Only the project owner can reserve project grant'
+          )
+            })
+       
+       
         var state = await mygov.connect(user_accounts[0]).getIsProjectPassed(0)
         console.log(state)
+        expect( state == true)
         
     }),
-    */
+    
     it('retrieves survey info', async function(){
           let surveyData = await mygov
             .connect(user_accounts[0])
@@ -202,10 +209,6 @@ describe('mygov', function () {
         expect(hexToDecimal(surveyData[1].hex) ===  999999999)
         expect(hexToDecimal(surveyData[2].hex) ===  3)
         expect(hexToDecimal(surveyData[3].hex) ===  5)
-    }),
-
-    it('checks if project is funded', async function() {
-
     }),
 
     it('retrieves project owner', async function(){
@@ -251,19 +254,28 @@ describe('mygov', function () {
         const count = await mygov.connect(user_accounts[0]).getNoOfProjectProposals()
         expect(count === 3)
     }),
-
+    
+//this test might not be working, memory leak?
     it('retrieves Ether Received By Project', async function(){
         console.log("retrieves initial")
             var initAmnt = await mygov.connect(user_accounts[0]).getEtherReceivedByProject(1)
             expect(initAmnt === 0)
         console.log("retrieves after")
-            //await hre.ethers.provider.send("evm_increaseTime", [10]) 
+            await timeMachine.advanceTime(5555555555)
             //need to pass time here
             await mygov.connect(user_accounts[0]).reserveProjectGrant(1)
             await mygov.connect(user_accounts[0]).withdrawProjectPayment(1)
             var amnt = await mygov.connect(user_accounts[0]).getEtherReceivedByProject(1)
             expect(amnt === 5)
 
-    })
+    }),
+
+     it('checks if project is funded', async function() {
+        var nonFunded = await mygov.connect(user_accounts[0]).getIsProjectFunded(0)
+        var funded = await mygov.connect(user_accounts[0]).getIsProjectFunded(1)
+        expect(nonFunded === false)
+        expect(funded === true)
+    }),
+   
     
 })
