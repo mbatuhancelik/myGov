@@ -86,10 +86,11 @@ describe('mygov', function () {
     }),
 
     it('Creates and gets surveys', async function () {
-        await mygov
-            .connect(user_accounts[num_of_users -1])
-            .transfer(user_accounts[0].address, 1)
-        
+        for (let i =  1; i < 3; i += 1) {
+            await mygov
+                .connect(user_accounts[i])
+                .transfer(user_accounts[0].address, 1)
+        }
         console.log('creating survey')
         
         var hash = 'ipfshash'
@@ -113,38 +114,99 @@ describe('mygov', function () {
         
     }),
 
-        it('Creates and gets project proposals', async function () {
-        for (let i =  1; i < num_of_users - 2; i += 1) {
+    it('Creates and gets project proposals', async function () {
+        for (let i =  3; i < 8; i += 1) {
             await mygov
                 .connect(user_accounts[i])
                 .transfer(user_accounts[0].address, 1)
         }
         console.log('creating proposal')
-       
-        // string memory ipfshash,
-        // uint256 votedeadline,
-        // uint256[] memory paymentamounts,
-        // uint256[] memory payschedule
-            var hash = 'ipfshash'
-            var amounts = [ 3]
-            var schedule = [5]
-            var deadline = 999999999
 
-            await mygov
-                .connect(user_accounts[0])
-                .submitProjectProposal(hash, deadline, amounts, schedule, {
-                    value: ethers.utils.parseEther('0.1'),
-                })
-        
-       
-           
-            let proposalData = await mygov
-                .connect(user_accounts[0])
-                .getProjectInfo(0);
+        var hash = 'ipfshash'
+        var amounts = [ 3]
+        var schedule = [5]
+        var deadline = 999999999
 
-            expect(hexToDecimal(proposalData[2].hex) ===  3)
+        await mygov
+            .connect(user_accounts[0])
+            .submitProjectProposal(hash, deadline, amounts, schedule, {
+                value: ethers.utils.parseEther('0.1'),
+            })
         
+        let proposalData = await mygov
+            .connect(user_accounts[0])
+            .getProjectInfo(0);
+
+        expect(hexToDecimal(proposalData[2].hex) ===  3)
+    }),
+
+    it ('Donates ether', async function(){
+        let beforeBalance = await mygov.connect(user_accounts[0].ethers)
+        console.log('donating ether')
+        await mygov.connect(user_accounts[0])
+            .donateEther( {value: ethers.utils.parseEther('1'),})
+        let afterBalance = await mygov.connect(user_accounts[0].ethers)
+
+        expect(hexToDecimal(beforeBalance) - hexToDecimal(afterBalance) != 0)
+    }),
+    
+    it ('Votes for project proposal', async function(){
+        //var beforeFirstVoting = await mygov.connect(user_accounts[0]).getIsProjectPassed(0)
+        //console.log('Before first reject vote for project proposal...\n Project is funded? ' + beforeFirstVoting)
+        console.log('Voting...')
+        await mygov
+            .connect(user_accounts[8])
+            .voteForProjectProposal(0, false)
+            
+
+        //var afterFirstVoting = await mygov.connect(user_accounts[0]).getIsProjectPassed(0)
+
+        //console.log('After the first reject vote... \n Project is funded? '+ afterFirstVoting)
+        console.log('Second voting...')
+        for (let i = 9; i < 11; i += 1) {
+        await mygov
+            .connect(user_accounts[i]).voteForProjectProposal(0, true)
+        }
+        //var afterSecondVoting = await mygov.connect(user_accounts[0]).getIsProjectPassed(0)
+        //console.log('After the second voting, two account accept project proposal... \n Project is funded? '+ afterSecondVoting )
         
-    })
+        expect(afterFirstVoting === false & afterSecondVoting === true)
+
+    }),
+
+
+    it ('Takes survey and gets survey results', async function(){
+        console.log('Starting taking survey and getting survey results...')
+        let surveyData = await mygov
+            .connect(user_accounts[0])
+            .getSurveyInfo(0);
+         console.log('  Survey 0 deadline is ' + surveyData[1] + ', number of choices is ' + surveyData[2] + ' and at most choice is ' + surveyData[3] + '!' )
+        
+        await mygov
+            .connect(user_accounts[0]).takeSurvey(0, [10])
+        
+        expect("Invalid choice")
+         
+    }),
+
+    it ('Withdraws project payment', async function(){
+        
+    }),
+
+    it ('Gets survey owner', async function(){
+
+    }),
+
+    it ('Gets project next payment', async function(){
+
+    }),
+
+    it ('Gets project info', async function(){
+
+    }),
+
+    it ('Gets number of funded projects', async function(){
+
+    }),
 
 })

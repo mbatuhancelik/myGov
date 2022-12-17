@@ -1,16 +1,15 @@
 pragma solidity ^0.8.0;
 
-import "./2_mygovtoken.sol";
+import "./mygovtoken.sol";
 
 
 contract myGOVV is mygovtoken  {
 
     uint256 projectCounter;
-    mapping(uint256 => projectProposal) proposals; //Proposal id => Proposal
+    mapping(uint256 => projectProposal) public proposals; //Proposal id => Proposal
     mapping(uint256 => bool) isFunded; //Project id => funded?
     uint256 fundedProjects;
     mapping(address => uint256) votedContent;
-
     mapping(uint256 => projectProposal) projects;
     struct projectProposal {
         string ipfshash;
@@ -95,6 +94,11 @@ contract myGOVV is mygovtoken  {
             msg.value == 40000000000000000,
             "You must send 40000000000000000 wei"
         );
+        require(
+            numchoices >= atmostchoice,
+            "At most choice cannot exceed number of choices"
+        );
+
         ERC20.transfer(owner, 2);
 
         surveys[surveyCounter].ipfshash = ipfshash;
