@@ -1,15 +1,16 @@
 pragma solidity ^0.8.0;
 
-import "./mygovtoken.sol";
+import "./2_mygovtoken.sol";
 
 
 contract myGOVV is mygovtoken  {
 
     uint256 projectCounter;
-    mapping(uint256 => projectProposal) public proposals; //Proposal id => Proposal
+    mapping(uint256 => projectProposal) proposals; //Proposal id => Proposal
     mapping(uint256 => bool) isFunded; //Project id => funded?
     uint256 fundedProjects;
     mapping(address => uint256) votedContent;
+
     mapping(uint256 => projectProposal) projects;
     struct projectProposal {
         string ipfshash;
@@ -94,11 +95,6 @@ contract myGOVV is mygovtoken  {
             msg.value == 40000000000000000,
             "You must send 40000000000000000 wei"
         );
-        require(
-            numchoices >= atmostchoice,
-            "At most choice cannot exceed number of choices"
-        );
-
         ERC20.transfer(owner, 2);
 
         surveys[surveyCounter].ipfshash = ipfshash;
@@ -169,6 +165,7 @@ contract myGOVV is mygovtoken  {
         fundedProjects += 1;
         project.currentPhase = 0;
         project.isReserved= true;
+        delete project.votedAddresses;
         nonReservedBalance -= project.requiredFund;
         clearProjectVotes(projectid);
     }
@@ -176,7 +173,7 @@ contract myGOVV is mygovtoken  {
     function withdrawProjectPayment(uint256 projectid) public {
         require(projectid < projectCounter, "This project does not exists");
         projectProposal storage project = proposals[projectid];
-        require(project.isFunded, "This project is not funded by the MyGov.");
+        require(project.isReserved, "You must reserve the project payment to withdraw");
         require(
             project.payschedule[project.currentPhase] < block.timestamp,
             "This payment has expired."
@@ -186,10 +183,26 @@ contract myGOVV is mygovtoken  {
             "Only the project owner can withdraw the project payment."
         );
 
+        uint256 yays;
+        uint256 treshold = totalFaucets / 100;
+        address voter;
+        bool passed = false;
+        for (uint256 i = 0; i < project.votedAddresses.length; i++) {
+            voter = project.votedAddresses[i];
+            if (project.voteContent[voter]) {
+                yays += votingPower[voter];
+                if (yays > treshold) {
+                    passed =  true;
+                    break;
+                }
+            }
+        }
+        require(passed, "Payment is not approved by mygov members");
         (bool sent, bytes memory data) = msg.sender.call{
             value: project.paymentamounts[project.currentPhase]
         }("");
         require(sent, "Failed to send Ether");
+        delete project.votedAddresses;
         project.currentPhase += 1;
         clearProjectVotes(projectid);
     }
@@ -210,8 +223,8 @@ contract myGOVV is mygovtoken  {
         uint256 yays;
         uint256 treshold = totalFaucets / 10;
         address voter;
-        for (uint256 i = 0; i < 10000000; i++) {
-            voter = project.votedAddresses[0];
+        for (uint256 i = 0; i < project.votedAddresses.length; i++) {
+            voter = project.votedAddresses[i];
             if (project.voteContent[voter]) {
                 yays += votingPower[voter];
                 if (yays > treshold) {
@@ -304,7 +317,7 @@ contract myGOVV is mygovtoken  {
         );        
         return proposals[projectid].paymentamounts[proposals[projectid].currentPhase];
     }
-function getProjectOwner(uint projectid) public view
+function getProjectNextOwner(uint projectid) public view
     returns(address projectowner){
           require(
             projectid < projectCounter,

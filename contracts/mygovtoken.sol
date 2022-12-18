@@ -23,6 +23,7 @@ contract mygovtoken is ERC20 {
         //requires solidity 5
         owner = address(this);
         maxTokens = maxTokenss - 1 ;
+        ERC20._mint(owner,1);
     }
 
     function faucet() public {
@@ -64,6 +65,14 @@ contract mygovtoken is ERC20 {
         require(balanceOf(memberaddr) > 0, "You cannot delegate votes to a non member");
         cancelDelegation();
         delegetee[msg.sender] = memberaddr;
+        address current_delegetee = delegetee[memberaddr];
+        if(current_delegetee != address(0)){
+            while(votingPower[current_delegetee] == 0){
+                current_delegetee = delegetee[current_delegetee];
+                
+            }
+        memberaddr = current_delegetee;
+        }
         votingPower[memberaddr] += votingPower[msg.sender];
         total_delegators[memberaddr] += 1;
         votingPower[msg.sender] = 0;
