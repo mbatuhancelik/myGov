@@ -183,6 +183,10 @@ describe('mygov', function () {
 
         console.log('voting...')
         for (let i = 18; i < 25; i += 1) {
+            var votes = await mygov
+            .connect(user_accounts[i])
+            .getVotes(user_accounts[i].address)
+            console.log("Voting power of user " + i + " is => " + votes)
             await mygov
                 .connect(user_accounts[i]).voteForProjectProposal(1, true)
         }
@@ -227,11 +231,11 @@ describe('mygov', function () {
         
          
     }),
-    /*
+
     it ('Withdraws project payment', async function(){
         
     }),
-    */
+
     it ('Gets survey owner', async function(){
         console.log('Test description: Getting owner of the survey 1')
         console.log("trying to get owner of a non-existed survey...")
