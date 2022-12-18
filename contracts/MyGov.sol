@@ -304,7 +304,7 @@ contract myGOVV is mygovtoken  {
         );        
         return proposals[projectid].paymentamounts[proposals[projectid].currentPhase];
     }
-function getProjectNextOwner(uint projectid) public view
+function getProjectOwner(uint projectid) public view
     returns(address projectowner){
           require(
             projectid < projectCounter,
