@@ -61,6 +61,7 @@ describe('mygov', function () {
             await mygov
                 .connect(user_accounts[i])
                 .transfer(user_accounts[0].address, 1)
+        await mygov.connect(user_accounts[i]).cancelDelegation()
         }
         var balance = await mygov
             .connect(user_accounts[0])
