@@ -1,19 +1,19 @@
 pragma solidity ^0.8.0;
 
-import "./2_mygovtoken.sol";
+import "./mygovtoken.sol";
 
 
 contract myGOVV is mygovtoken  {
 
-    uint256 projectCounter;
-    mapping(uint256 => projectProposal) proposals; //Proposal id => Proposal
+    uint256 projectCounter; //for project id 
+    mapping(uint256 => projectProposal)public  proposals; //Proposal id => Proposal
     mapping(uint256 => bool) isFunded; //Project id => funded?
     uint256 fundedProjects;
-    mapping(address => uint256) votedContent;
+    mapping(address => uint256) public votedContent;
 
     mapping(uint256 => projectProposal) projects;
     struct projectProposal {
-        string ipfshash;
+        string ipfshash; 
         uint256 votedeadline;
         uint256[] paymentamounts;
         uint256[] payschedule;
@@ -317,7 +317,7 @@ contract myGOVV is mygovtoken  {
         );        
         return proposals[projectid].paymentamounts[proposals[projectid].currentPhase];
     }
-function getProjectNextOwner(uint projectid) public view
+function getProjectOwner(uint projectid) public view
     returns(address projectowner){
           require(
             projectid < projectCounter,
@@ -358,4 +358,7 @@ function getProjectNextOwner(uint projectid) public view
      return surveyCounter;
  }
 
+function getVoteContent(uint projectid, address sender) public view returns (bool choice){
+    return proposals[projectid].voteContent[sender];
+}
 }
