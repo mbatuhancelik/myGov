@@ -18,7 +18,7 @@ export default  function WithdrawPayment(){
                 Withdraw project payment
         </Typography>
         <TextField type="int" style={{ marginBottom: 20 }} fullWidth label="Project ID" value={projectID} onChange={e => setProjectID(e.target.value)} />
-        <Button variant="contained" fullWidth onClick={() => { void send(projectID)}}>Withdraw Project Payment</Button>
+        <Button variant="contained" disabled={projectID.length == 0} fullWidth onClick={() => { void send(projectID)}}>Withdraw Project Payment</Button>
         <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='40px'>
                 {(state.transaction !== undefined && state.status !== 'None') ? "Withdraw payment for project " + projectID + "successfully completed!": (state.status === "Exception" ? `Exception Details: ${state.errorMessage}` : "")}
         </Typography>

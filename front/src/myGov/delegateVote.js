@@ -21,7 +21,7 @@ export default  function DelegateVote(){
         </Typography>
         <TextField type="string" style={{ marginBottom: 20 }} fullWidth label="Member Address" value={address} onChange={e => setAddress(e.target.value)} />
         <TextField type="int" style={{ marginBottom: 20 }} fullWidth label="Project ID" value={amount} onChange={e => setAmount(e.target.value)} />
-        <Button variant="contained" fullWidth onClick={() => { void send1(address, amount)}}>Delegate Vote</Button>
+        <Button variant="contained" disabled={address.length == 0 || amount.length == 0} fullWidth onClick={() => { void send1(address, amount)}}>Delegate Vote</Button>
         <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='40px'>
                 {(state1.transaction !== undefined && state1.status !== 'None') ? "Successfully delegated vote to " + address: (state1.status === "Exception" ? `Exception Details: ${state1.errorMessage}` : "")}
         </Typography>
@@ -31,7 +31,5 @@ export default  function DelegateVote(){
                 {(state2.transaction !== undefined && state2.status !== 'None') ? "Successfully undo all delegations!": (state2.status === "Exception" ? `Exception Details: ${state2.errorMessage}` : "")}
         </Typography>
         </div>
-
-
     );
 }

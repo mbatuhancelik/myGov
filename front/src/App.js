@@ -13,6 +13,7 @@ import VoteForProjectPayment from "./myGov/voteForProjectPayment"
 import VoteForProjectProposal from "./myGov/voteForProjectProposal"
 import WithdrawPayment from "./myGov/withdrawPayment"
 import ReserveProjectGrant from "./myGov/reserveProjectGrant";
+import GetAndVoteSurvey from "./myGov/getAndVoteSurvey";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path={"voteForProjectProposal"} element={<VoteForProjectProposal/>}/>
           <Route path={"withdrawPayment"} element={<WithdrawPayment/>}/>
           <Route path={"reserveProjectGrant"} element={<ReserveProjectGrant/>}/>
+          <Route path={"getAndVoteSurvey"} element={<GetAndVoteSurvey/>}/>
           {/* <Route path={"mint"} element={<Mint/>}/>
           <Route path={"checkIfTicketWon"} element={<CheckIfTicketWon/>}/>
           <Route path={"collectTicketPrize"} element={<CollectTicketPrize/>}/>

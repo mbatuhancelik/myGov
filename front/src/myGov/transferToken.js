@@ -20,7 +20,7 @@ export default  function TransferToken(){
         </Typography>
         <TextField type="string" style={{ marginBottom: 20 }} fullWidth label="Address" value={address} onChange={e => setAddress(e.target.value)} />
         <TextField type="int" style={{ marginBottom: 20 }} fullWidth label="Amount" value={amount} onChange={e => setAmount(e.target.value)} />
-        <Button variant="contained" fullWidth onClick={() => { void send(address, amount)}}>Transfer Token</Button>
+        <Button variant="contained" disabled={address.length == 0 || amount.length == 0} fullWidth onClick={() => { void send(address, amount)}}>Transfer Token</Button>
         <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='40px'>
                 {(state.transaction !== undefined && state.status !== 'None') ? "Successfully transferred!": (state.status === "Exception" ? `Exception Details: ${state.errorMessage}` : "")}
         </Typography>

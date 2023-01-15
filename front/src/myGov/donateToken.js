@@ -18,7 +18,7 @@ export default  function DonateToken(){
                 Donate MyGov token
         </Typography>
         <TextField type="int" style={{ marginBottom: 20 }} fullWidth label="Amount" value={amount} onChange={e => setAmount(e.target.value)} />
-        <Button variant="contained" fullWidth onClick={() => { void send(amount)}}>Donate Token</Button>
+        <Button variant="contained" disabled={amount.length == 0} fullWidth onClick={() => { void send(amount)}}>Donate Token</Button>
         <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='40px'>
                 {(state.transaction !== undefined && state.status !== 'None') ? "Thank you for your donation!": (state.status === "Exception" ? `Exception Details: ${state.errorMessage}` : "")}
         </Typography>
