@@ -23,7 +23,5 @@ export default  function WithdrawPayment(){
                 {(state.transaction !== undefined && state.status !== 'None') ? "Withdraw payment for project " + projectID + "successfully completed!": (state.status === "Exception" ? `Exception Details: ${state.errorMessage}` : "")}
         </Typography>
         </div>
-
-
     );
 }

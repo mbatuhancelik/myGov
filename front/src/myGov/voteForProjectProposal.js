@@ -11,10 +11,20 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
-
+function NewlineText(props) {
+    const text = props.text;
+    const newText = text.split('\n').map(str => <p>{str}</p>);
+    
+    return newText;
+  }
 
 export default  function VoteForProjectProposal(){
-    const { state, send } = useContractFunction(contract, 'voteForProjectProposal', {});
+    const {state: stateVote, send: sendVote } = useContractFunction(contract, 'voteForProjectProposal', {});
+    const {state: stateGetInfo, send: sendGetInfo } = useContractFunction(contract, 'getProjectInfo', {});
+    const {state: stateGetNextPayment, send: sendGetNextPayment } = useContractFunction(contract, 'getProjectNextPayment', {});
+    const {state: stateGetOwner, send: sendGetOwner } = useContractFunction(contract, 'getProjectNextOwner', {});
+
+
     const [projectID, setProjectID] = useState("")
     const [choice, setChoice] = useState("")
 
@@ -38,9 +48,33 @@ export default  function VoteForProjectProposal(){
             <MenuItem value={false}>Disagree</MenuItem>
         </Select>
         </FormControl>
-        <Button variant="contained" disabled={projectID.length == 0 || choice.length == 0} fullWidth onClick={() => { void send(projectID, choice)}}>Vote</Button>
-        <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='40px'>
-                {(state.transaction !== undefined && state.status !== 'None') ? "Your choice for project " + projectID + " is saved successfully!": (state.status === "Exception" ? `Exception Details: ${state.errorMessage}` : "")}
+
+        <Button variant="contained" disabled={projectID.length == 0 || choice.length == 0} fullWidth onClick={() => { void sendVote(projectID, choice)}}>Vote</Button>
+        <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='10px' marginBottom='30px'>
+                {(stateVote.transaction !== undefined && stateVote.status !== 'None') ? "Your choice for project " + projectID + " is saved successfully!": (stateVote.status === "Exception" ? `Exception Details: ${stateVote.errorMessage}` : "")}
+        </Typography>
+
+        <Button variant="contained" disabled={projectID.length == 0} fullWidth onClick={() => { void sendGetInfo(projectID)}}>Get Project Info</Button>
+        <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='10px' marginBottom='30px'>
+                {(stateGetInfo.transaction !== undefined && stateGetInfo.status !== 'None') ? 
+                <NewlineText text={(
+                "Detailed information for project " + projectID + " as follows:\n IPFS Hash: " + stateGetInfo.transaction.ipfshash 
+                + "\nVote deadline: " + stateGetInfo.transaction.votedeadline
+                + "\nPayment amounts: " + stateGetInfo.transaction.paymentamounts
+                + "\nPay schedule: " + stateGetInfo.transaction.payschedule)}/>
+                : (stateGetInfo.status === "Exception" ? `Exception Details: ${stateGetInfo.errorMessage}` : "")}
+        </Typography>
+
+        <Button variant="contained" disabled={projectID.length == 0} fullWidth onClick={() => { void sendGetNextPayment(projectID)}}>Get Project Next Payment</Button>
+        <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='10px' marginBottom='30px'>
+                {(stateGetNextPayment.transaction !== undefined && stateGetNextPayment.status !== 'None') ? "Next payment for project " + projectID + " is " + stateGetNextPayment.transaction
+                : (stateGetNextPayment.status === "Exception" ? `Exception Details: ${stateGetNextPayment.errorMessage}` : "")}
+        </Typography>
+
+        <Button variant="contained" disabled={projectID.length == 0} fullWidth onClick={() => { void sendGetOwner(projectID)}}>Get Project Owner</Button>
+        <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='10px' marginBottom='30px'>
+                {(stateGetOwner.transaction !== undefined && stateGetOwner.status !== 'None') ? "Owner of project " + projectID + " is " + stateGetOwner.transaction
+                : (stateGetOwner.status === "Exception" ? `Exception Details: ${stateGetOwner.errorMessage}` : "")}
         </Typography>
         </div>
 

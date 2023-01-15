@@ -7,10 +7,10 @@ import {useState} from "react";
 import { ethers, utils } from 'ethers'
 import { Contract } from '@ethersproject/contracts'
 
-
 export default  function GetBalance(){
     const { state: stateSubmitProposal, send: sendSubmitProposal } = useContractFunction(contract, 'submitProjectProposal', { transactionName: 'Wrap'});
     const { state: stateGetNumberOfProposals, send: sendGetNumberOfProposals } = useContractFunction(contract, 'getNoOfProjectProposals', {});
+    const { state: stateGetNumberOfFundedProjects, send: sendGetNumberOfFundedProjects } = useContractFunction(contract, 'getNoOfFundedProjects', {});
 
     
     const [deadline, setDeadline] = useState("")
@@ -40,14 +40,17 @@ export default  function GetBalance(){
 
         <Button variant="contained" 
         fullWidth onClick={() => { void sendGetNumberOfProposals()}}>Get Total Number Of Project Proposals</Button>
-        <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='10px'>
+        <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='10px' marginBottom='30px'>
                 {(stateGetNumberOfProposals.transaction !== undefined && stateGetNumberOfProposals.status !== 'None') ? "Total number of project proposals: " + stateGetNumberOfProposals.transaction: (stateGetNumberOfProposals.status === "Exception" ? `Exception Details: ${stateGetNumberOfProposals.errorMessage}` : "")}
         </Typography>
 
+        <Button variant="contained" 
+        fullWidth onClick={() => { void sendGetNumberOfFundedProjects()}}>Get Total Number Of Funded Project Proposals</Button>
+        <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='10px' marginBottom='30px'>
+                {(stateGetNumberOfFundedProjects.transaction !== undefined && stateGetNumberOfFundedProjects.status !== 'None') ? "Total number of funded project proposals: " + stateGetNumberOfFundedProjects.transaction: (stateGetNumberOfFundedProjects.status === "Exception" ? `Exception Details: ${stateGetNumberOfFundedProjects.errorMessage}` : "")}
+        </Typography>
+
         </div>
-
-        
-
 
     );
 }

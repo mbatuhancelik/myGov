@@ -39,7 +39,8 @@ export default  function SubmitSurvey(){
         <Button variant="contained" 
         fullWidth onClick={() => { void sendNumberOfSurveys()}}>Get Total Number Of Surveys</Button>
         <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='10px'>
-                {(stateNumberOfSurveys.transaction !== undefined && stateNumberOfSurveys.status !== 'None') ? "Total number of surveys: " + stateNumberOfSurveys.transaction: (stateNumberOfSurveys.status === "Exception" ? `Exception Details: ${stateNumberOfSurveys.errorMessage}` : "")}
+                {(stateNumberOfSurveys.transaction !== undefined && stateNumberOfSurveys.status !== 'None') ? "Total number of surveys: " + stateNumberOfSurveys.transaction
+                : (stateNumberOfSurveys.status === "Exception" ? `Exception Details: ${stateNumberOfSurveys.errorMessage}` : "")}
         </Typography>
         </div>
 
