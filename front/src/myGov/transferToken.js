@@ -8,19 +8,21 @@ import { utils } from 'ethers'
 import { Contract } from '@ethersproject/contracts'
 
 
-export default  function SubmitProjectProposal(){
-    const { state, send } = useContractFunction(contract, 'submitProjectProposal', {});
+export default  function TransferToken(){
+    const { state, send } = useContractFunction(contract, 'transfer', {});
     const [address, setAddress] = useState("")
+    const [amount, setAmount] = useState("")
 
     return (
         <div>
         <Typography variant="h2" component="div" gutterBottom align={"center"}>
-                Submit Project Proposal
+                Transfer token to the address
         </Typography>
         <TextField type="string" style={{ marginBottom: 20 }} fullWidth label="Address" value={address} onChange={e => setAddress(e.target.value)} />
-        <Button variant="contained" fullWidth onClick={() => { void send(address)}}>Get Balance</Button>
+        <TextField type="int" style={{ marginBottom: 20 }} fullWidth label="Amount" value={amount} onChange={e => setAmount(e.target.value)} />
+        <Button variant="contained" fullWidth onClick={() => { void send(address, amount)}}>Transfer Token</Button>
         <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='40px'>
-                {(state.transaction !== undefined && state.status !== 'None') ? "User balance is " + parseInt(state.transaction._hex): (state.status === "Exception" ? `Exception Details: ${state.errorMessage}` : "")}
+                {(state.transaction !== undefined && state.status !== 'None') ? "Successfully transferred!": (state.status === "Exception" ? `Exception Details: ${state.errorMessage}` : "")}
         </Typography>
         </div>
 

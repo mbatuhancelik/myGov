@@ -25,6 +25,8 @@ export default function Layout() {
                 <a  id="home" className="menu-item" href="/#/">Home</a>
                 <a  id="faucet" className="menu-item" href="/#/Faucet">Faucet</a>
                 <a  id="getBalance" className="menu-item" href="/#/GetBalance">GetBalance</a>
+                <a  id="submitProjectProposal" className="menu-item" href="/#/SubmitProjectProposal">Submit Project Proposal</a>
+                <a  id="transferToken" className="menu-item" href="/#/TransferToken">Transfer Token</a>
             </Menu>
 
             <Container maxWidth="md" style={{height:"100%", alignContent:"center"}}>
