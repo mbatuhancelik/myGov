@@ -7,6 +7,8 @@ import Faucet from "./myGov/faucet"
 import GetBalance from "./myGov/getBalance"
 import SubmitProjectProposal from "./myGov/submitProjectProposal"
 import TransferToken from "./myGov/transferToken"
+import DelegateVote from "./myGov/delegateVote"
+import DonateToken from "./myGov/donateToken"
 function App() {
   return (
     <React.Fragment>
@@ -17,6 +19,8 @@ function App() {
           <Route path={"getBalance"} element={<GetBalance/>}/>
           <Route path={"submitProjectProposal"} element={<SubmitProjectProposal/>}/>
           <Route path={"transferToken"} element={<TransferToken/>}/>
+          <Route path={"delegateVote"} element={<DelegateVote/>}/>
+          <Route path={"donateToken"} element={<DonateToken/>}/>
           {/* <Route path={"mint"} element={<Mint/>}/>
           <Route path={"checkIfTicketWon"} element={<CheckIfTicketWon/>}/>
           <Route path={"collectTicketPrize"} element={<CollectTicketPrize/>}/>
