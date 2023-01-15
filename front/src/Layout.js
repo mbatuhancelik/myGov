@@ -30,6 +30,7 @@ export default function Layout() {
                 <a  id="delegateVote" className="menu-item" href="/#/DelegateVote">Delegate Vote</a>
                 <a  id="donateToken" className="menu-item" href="/#/DonateToken">Donate Token</a>
                 <a  id="voteForProjectPayment" className="menu-item" href="/#/VoteForProjectPayment">Vote For Project Payment</a>
+                <a  id="withdrawPayment" className="menu-item" href="/#/WithdrawPayment">Withdraw Payment</a>
             </Menu>
 
             <Container maxWidth="md" style={{height:"100%", alignContent:"center"}}>

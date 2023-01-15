@@ -10,6 +10,7 @@ import TransferToken from "./myGov/transferToken"
 import DelegateVote from "./myGov/delegateVote"
 import DonateToken from "./myGov/donateToken"
 import VoteForProjectPayment from "./myGov/voteForProjectPayment"
+import WithdrawPayment from "./myGov/withdrawPayment"
 function App() {
   return (
     <React.Fragment>
@@ -23,6 +24,7 @@ function App() {
           <Route path={"delegateVote"} element={<DelegateVote/>}/>
           <Route path={"donateToken"} element={<DonateToken/>}/>
           <Route path={"voteForProjectPayment"} element={<VoteForProjectPayment/>}/>
+          <Route path={"withdrawPayment"} element={<WithdrawPayment/>}/>
           {/* <Route path={"mint"} element={<Mint/>}/>
           <Route path={"checkIfTicketWon"} element={<CheckIfTicketWon/>}/>
           <Route path={"collectTicketPrize"} element={<CollectTicketPrize/>}/>
