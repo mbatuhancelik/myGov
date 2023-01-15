@@ -5,6 +5,7 @@ import Home from "./Home";
 
 import Faucet from "./myGov/faucet"
 import GetBalance from "./myGov/getBalance"
+import SubmitProjectProposal from "./myGov/submitProjectProposal"
 function App() {
   return (
     <React.Fragment>
@@ -13,6 +14,7 @@ function App() {
           <Route index element={<Home/>}/>
           <Route path={"faucet"} element={<Faucet/>}/>
           <Route path={"getBalance"} element={<GetBalance/>}/>
+          <Route path={"submitProjectProposal"} element={<SubmitProjectProposal/>}/>
           {/* <Route path={"mint"} element={<Mint/>}/>
           
           <Route path={"checkIfTicketWon"} element={<CheckIfTicketWon/>}/>
