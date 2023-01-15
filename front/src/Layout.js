@@ -34,6 +34,8 @@ export default function Layout() {
                 <a  id="withdrawPayment" className="menu-item" href="/#/WithdrawPayment">Withdraw Payment</a>
                 <a  id="reserveProjectGrant" className="menu-item" href="/#/ReserveProjectGrant">Reserve Project Grant</a>
                 <a id="getAndVoteSurvey" className="menu-item" href="/#/GetAndVoteSurvey">Get And Vote Survey</a>
+                <a  id="getBalance" className="menu-item" href="/#/GetBalance">GetBalance</a>
+                <a  id="createProposal" className="menu-item" href="/#/CreateProposal">Create Projet Proposal</a>
             </Menu>
 
             <Container maxWidth="md" style={{height:"100%", alignContent:"center"}}>

@@ -15,6 +15,7 @@ import WithdrawPayment from "./myGov/withdrawPayment"
 import ReserveProjectGrant from "./myGov/reserveProjectGrant";
 import GetAndVoteSurvey from "./myGov/getAndVoteSurvey";
 
+import CreateProposal from "./myGov/create_proposal"
 function App() {
   return (
     <React.Fragment>
@@ -32,6 +33,7 @@ function App() {
           <Route path={"withdrawPayment"} element={<WithdrawPayment/>}/>
           <Route path={"reserveProjectGrant"} element={<ReserveProjectGrant/>}/>
           <Route path={"getAndVoteSurvey"} element={<GetAndVoteSurvey/>}/>
+          <Route path={"createProposal"} element={<CreateProposal/>}/>
           {/* <Route path={"mint"} element={<Mint/>}/>
           <Route path={"checkIfTicketWon"} element={<CheckIfTicketWon/>}/>
           <Route path={"collectTicketPrize"} element={<CollectTicketPrize/>}/>
