@@ -76,7 +76,11 @@ export default  function VoteForProjectProposal(){
                 {(stateGetOwner.transaction !== undefined && stateGetOwner.status !== 'None') ? "Owner of project " + projectID + " is " + stateGetOwner.transaction
                 : (stateGetOwner.status === "Exception" ? `Exception Details: ${stateGetOwner.errorMessage}` : "")}
         </Typography>
+
+
         </div>
+
+        
 
 
     );
