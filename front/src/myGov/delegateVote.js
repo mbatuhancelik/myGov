@@ -16,7 +16,7 @@ export default  function DelegateVote(){
     return (
         <div>
         <Typography variant="h2" component="div" gutterBottom align={"center"}>
-                Transfer token to the address
+                Delegate vote to the address
         </Typography>
         <TextField type="string" style={{ marginBottom: 20 }} fullWidth label="Member Address" value={address} onChange={e => setAddress(e.target.value)} />
         <TextField type="int" style={{ marginBottom: 20 }} fullWidth label="Project ID" value={amount} onChange={e => setAmount(e.target.value)} />
