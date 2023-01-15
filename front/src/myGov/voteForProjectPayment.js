@@ -40,7 +40,7 @@ export default  function VoteForProjectPayment(){
         </FormControl>
         <Button variant="contained" fullWidth onClick={() => { void send(projectID, choice)}}>Vote</Button>
         <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='40px'>
-                {(state.transaction !== undefined && state.status !== 'None') ? "User balance is " + parseInt(state.transaction._hex): (state.status === "Exception" ? `Exception Details: ${state.errorMessage}` : "")}
+                {(state.transaction !== undefined && state.status !== 'None') ? "Your choice for project " + projectID + " is " + choice: (state.status === "Exception" ? `Exception Details: ${state.errorMessage}` : "")}
         </Typography>
         </div>
 
