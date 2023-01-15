@@ -29,7 +29,8 @@ export default  function GetBalance(){
                 Survey related actions
         </Typography>
         <TextField type="int" style={{ marginBottom: 20 }} fullWidth label="Survey ID" value={surveyID} onChange={e => setSurveyID(e.target.value)} />
-        <TextField type="int[]" style={{ marginBottom: 20 }} fullWidth label="Survey Choices" value={surveyChoices} onChange={e => setSurveyChoices(e.target.value)} />
+        <TextField type="string" style={{ marginBottom: 20 }} fullWidth label="Survey Choices" value={surveyChoices} onChange={e => setSurveyChoices(e.target.value)} />
+        
         <Button variant="contained" disabled={surveyID.length == 0} fullWidth onClick={() => { void sendSurveyOwner(surveyID)}}>Get Survey Owner</Button>
         <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='10px' marginBottom='30px'>
                 {(stateSurveyOwner.transaction !== undefined && stateSurveyOwner.status !== 'None') ? "Owner of the survey " + surveyID + " is " + stateSurveyOwner.transaction : (stateSurveyOwner.status === "Exception" ? `Exception Details: ${stateSurveyOwner.errorMessage}` : "")}
@@ -53,7 +54,7 @@ export default  function GetBalance(){
                 : (stateSurveyResults.status === "Exception" ? `Exception Details: ${stateSurveyResults.errorMessage}` : "")}
         </Typography>
 
-        <Button variant="contained" disabled={surveyID.length == 0 || surveyChoices.length == 0} fullWidth onClick={() => { void sendVoting(surveyID, surveyChoices); console.log(surveyChoices)}}>Vote the survey</Button>
+        <Button variant="contained" disabled={surveyID.length == 0 || surveyChoices.length == 0} fullWidth onClick={() => { void sendVoting(parseInt(surveyID), surveyChoices.match(/\S+/g).map(Number)); console.log(stateVoting.transaction)}}>Vote the survey</Button>
         <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='10px' marginBottom='30px'>
                 {(stateVoting.transaction !== undefined && stateVoting.status !== 'None') ? 
                 "You voted the survey successfully!"

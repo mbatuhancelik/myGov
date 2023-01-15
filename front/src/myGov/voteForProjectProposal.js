@@ -21,7 +21,7 @@ export default  function VoteForProjectProposal(){
     return (
         <div>
         <Typography variant="h2" component="div" gutterBottom align={"center"}>
-                Vote for project payment
+                Vote for project proposal
         </Typography>
         <TextField type="int" style={{ marginBottom: 20 }} fullWidth label="Project ID" value={projectID} onChange={e => setProjectID(e.target.value)} />
         <FormControl fullWidth>
@@ -40,7 +40,7 @@ export default  function VoteForProjectProposal(){
         </FormControl>
         <Button variant="contained" disabled={projectID.length == 0 || choice.length == 0} fullWidth onClick={() => { void send(projectID, choice)}}>Vote</Button>
         <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='40px'>
-                {(state.transaction !== undefined && state.status !== 'None') ? "Your choice for project " + projectID + " is saved successfully": (state.status === "Exception" ? `Exception Details: ${state.errorMessage}` : "")}
+                {(state.transaction !== undefined && state.status !== 'None') ? "Your choice for project " + projectID + " is saved successfully!": (state.status === "Exception" ? `Exception Details: ${state.errorMessage}` : "")}
         </Typography>
         </div>
 
