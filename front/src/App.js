@@ -5,7 +5,7 @@ import Home from "./Home";
 
 import Faucet from "./myGov/faucet"
 import GetBalance from "./myGov/getBalance"
-import SubmitProjectProposal from "./myGov/submitProjectProposal"
+import SubmitSurvey from "./myGov/submitSurvey"
 import TransferToken from "./myGov/transferToken"
 import DelegateVote from "./myGov/delegateVote"
 import DonateToken from "./myGov/donateToken"
@@ -24,7 +24,7 @@ function App() {
           <Route index element={<Home/>}/>
           <Route path={"faucet"} element={<Faucet/>}/>
           <Route path={"getBalance"} element={<GetBalance/>}/>
-          <Route path={"submitProjectProposal"} element={<SubmitProjectProposal/>}/>
+          <Route path={"submitSurvey"} element={<SubmitSurvey/>}/>
           <Route path={"transferToken"} element={<TransferToken/>}/>
           <Route path={"delegateVote"} element={<DelegateVote/>}/>
           <Route path={"donateToken"} element={<DonateToken/>}/>
