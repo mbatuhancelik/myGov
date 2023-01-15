@@ -10,6 +10,7 @@ import TransferToken from "./myGov/transferToken"
 import DelegateVote from "./myGov/delegateVote"
 import DonateToken from "./myGov/donateToken"
 import VoteForProjectPayment from "./myGov/voteForProjectPayment"
+import VoteForProjectProposal from "./myGov/voteForProjectProposal"
 import WithdrawPayment from "./myGov/withdrawPayment"
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path={"delegateVote"} element={<DelegateVote/>}/>
           <Route path={"donateToken"} element={<DonateToken/>}/>
           <Route path={"voteForProjectPayment"} element={<VoteForProjectPayment/>}/>
+          <Route path={"voteForProjectProposal"} element={<VoteForProjectProposal/>}/>
           <Route path={"withdrawPayment"} element={<WithdrawPayment/>}/>
           {/* <Route path={"mint"} element={<Mint/>}/>
           <Route path={"checkIfTicketWon"} element={<CheckIfTicketWon/>}/>
