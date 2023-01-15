@@ -10,6 +10,7 @@ import { Contract } from '@ethersproject/contracts'
 
 export default  function ReserveProjectGrant(){
     const { state, send } = useContractFunction(contract, 'reserveProjectGrant', {});
+    const { state: statePassed, send: sendPassed } = useContractFunction(contract, 'getIsProjectPassed', {});
     const [projectID, setProjectID] = useState("")
 
     return (
@@ -21,6 +22,10 @@ export default  function ReserveProjectGrant(){
         <Button variant="contained" disabled={projectID.length == 0} fullWidth onClick={() => { void send(projectID)}}>Reserve Project Grant</Button>
         <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='40px'>
                 {(state.transaction !== undefined && state.status !== 'None') ? "Reserving grant for project " + projectID + " is successfully completed!": (state.status === "Exception" ? `Exception Details: ${state.errorMessage}` : "")}
+        </Typography>
+        <Button variant="contained" disabled={projectID.length == 0} fullWidth onClick={() => { void sendPassed(projectID)}}>Is Project Passed</Button>
+        <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='40px'>
+                {(statePassed.transaction !== undefined && statePassed.status !== 'None') ? "Project " + projectID +"is passed? :" + statePassed.transaction : "Project has not passed!")}
         </Typography>
         </div>
 

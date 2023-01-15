@@ -27,7 +27,7 @@ export default  function DonateToken(){
         <TextField type="number" style={{ marginBottom: 20 }} fullWidth label="Ether Amount(in Ethers)" value={amountEther} onChange={e => setEther(e.target.value)} />
         <Button variant="contained" disabled={amountEther.length == 0} fullWidth onClick={() => { void sendEther({value: utils.parseEther(amountEther.toString())})}}>Donate Ethers</Button>
         <Typography variant="p1" component="div" gutterBottom align={"center"} marginTop='40px'>
-                {(state.transaction !== undefined && state.status !== 'None') ? "Thank you for your donation!": (state.status === "Exception" ? `Exception Details: ${state.errorMessage}` : "")}
+                {(stateEther.transaction !== undefined && state.status !== 'None') ? "Thank you for your donation!": (state.status === "Exception" ? `Exception Details: ${state.errorMessage}` : "")}
         </Typography>
         </div>
 
